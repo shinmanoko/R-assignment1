@@ -1,30 +1,246 @@
 ---
-title: "Assignment"
+title: "Assignment-1"
 author: "LI Yixuan"
-date: "30/09/2017"
+date: "28/09/2017"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+<br>
+<br>
+<br>
 
-## R Markdown
+## Exercise 1 : Getting started with RMarkdown files
+<br>
+(*From Wikipedia*)<br>
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+* **RStudio** is a free and open-source integrated development environment (IDE) for R.
+* **R** is a programming language for statistical computing and graphics.
+* **Github** is a web-based Git or version control repository and Internet hosting service. 
+* **Markdown** is a lightweight markup language with plain text formatting syntax. It is designed so that it can be converted to HTML and many other formats using a tool by the same name.
+<br>
+<br>
+<br>
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Exercise 2 : Starting R programming
+<br>
+```{r}
+possible_outcomes <- c(0,1,2,3,4,5)
+outcome_probabilities <- c(0.1, 0.5, 0.2, 0.1, 0.05, 0.05)
+n_data_points <- 400
 
-```{r cars}
-summary(cars)
+set.seed(1)
+fake_data_points <- sample(possible_outcomes, n_data_points, replace=T, prob=outcome_probabilities)
+set.seed(NULL)
+
+fake_data_set <- tibble::data_frame(`Fake measurement`=fake_data_points)
+```
+<br>
+* `n_data_points <- 400`
+  Like the 2 statements above, it give the value of 400 to the variable named `n_data_points`.
+
+* `fake_data_points <- sample(possible_outcomes, n_data_points, replace=T, prob=outcome_probabilities)`
+  Here we use the `sample()` fonction to introduce a random distribution of values in range given by `possible_outcomes` for a number of `n_data_points`, who obeys the possibiliy corresponding to each of the outcome class. (See documentation: "Random Samples and Permutations" with `help(sample)`)
+  And the `replace=T` option is set for TRUE, since that we need to sample the same item more than one time.
+
+* `set.seed(1)`
+  As in many examples found on the Internet, this fonction often combained with the random fonction, aims to save the random resalt, so that we can get the same next the script been run.
+  For the statement `set.seed(NULL)`, as written in RDocumentation, it re-initializes (see ‘Note’) as if no seed had yet been set.     
+  Though in `set.seed(seed, kind = NULL, normal.kind = NULL)`, the usage  meaning of the option `kind` and `normal.kind` is still unclear for me.
+
+* `fake_data_set <- tibble::data_frame(`Fake measurement`=fake_data_points)`
+  The `tibble` package provide us a better representation and access to the data frame, compared with the tranditional dataframe.
+  Here the fonction build a data frame using data stocked in `fake_data_points` variable before, with a title "Fake measurement".
+  Still, one question remmained unsolved is that call for the method assisted when searching on Internet is more like simply `data_frame()`, rather than `tibble::data_frame()` used in the script.<br>
+<br>
+<br>
+```{r}
+ggplot2::ggplot(fake_data_set, ggplot2::aes(x=`Fake measurement`)) + ggplot2::geom_histogram(bins=5, colour="black", fill="lightgrey")
+```
+<br>
+<br>
+* `ggplot2::ggplot(fake_data_set, ggplot2::aes(x=`Fake measurement`)) + ggplot2::geom_histogram(bins=5, colour="black", fill="lightgrey")`
+  Here the script start to plot the existing data.
+  The `ggplot2` package whose effect, from observation from the graph printed below can be assumed, permit us a much more sophiscated graph representation (more specifically histogram here with 5 bars) with self defined colour and bin size, and a name for the horizontal axis with `aes()` foction.
+<br>
+<br>
+<br>
+
+## Exercise 3 : Reasoning about numerical data
+<br>
+```{r}
+iris_groups23 <- dplyr::filter(iris, Species %in% c("versicolor", "virginica"))
+ggplot2::ggplot(iris_groups23, ggplot2::aes(x=Sepal.Width)) + ggplot2::geom_histogram(colour="black", fill="lightgrey", binwidth=0.1) + ggplot2::facet_grid(Species ~ .)
+```
+<br>
+<br>
+
+#### Question 3a.
+<br>
+The histogram show the distribution of the famous iris classification data set on the feature of their sepal width, which varies in a range between 2.0 and 3.8cm (spaced every 0.1 centimetres). <br>
+For each od two cases, when the horizontal axis represent the width of the flower's sepal width, the vertical axis refers to the number of data of each value of these sepal width. So that, a group contains more data, its bar will be taller.
+And summing them up, we get the totle number of data (50 for each genre, 100 in total).
+<br><br>
+Then here we select all samples in specie "versicolor" with a sepal width within 2.5cm.
+<br>
+```{r}
+library(magrittr)
+iris_versicolor_subset <- dplyr::filter(iris, Sepal.Width <= 2.5, Species == "versicolor") %>%
+                          dplyr::select(Sepal.Width, Species)
+knitr::kable(iris_versicolor_subset)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r, out.width='50%'}
+#knitr::include_graphics("WechatIMG105.jpeg")
+# The image can't be added to the server
+# with a message "Unexpected empty response from server"
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+<br>
+<br>
+
+#### Question 3b.
+<br>
+<br>
+This bar chart corresponds well to the result we got when the two seprate histograms are added up, with all groupes' vulue summed up.<br>
+<br>
+```{r}
+iris_groups23 <- dplyr::filter(iris, Species %in% c("versicolor","virginica"))
+ggplot2::ggplot(iris_groups23, ggplot2::aes(x=Sepal.Width)) + ggplot2::geom_histogram(colour="black", fill="lightgrey", binwidth=0.1)
+```
+
+<br>
+<br>
+
+#### Question 3c.
+<br>
+
+* **Hypothesis A**: The virginica and versicolor iris species are the same in terms of sepal width.
+* **Hypothesis B**: The virginica and versicolor iris species are different in terms of sepal width.
+<br>
+<br>
+The expression "same" in the first hypothesis (A) statistically means that the two groups of iris data obey the same distribution, which means for the same value of spepal width for each group the frequency will be roughly the same.<br>
+Revealed in graphs, these two histograms should have roughly a quite similar shape. Especially when we have the same number of data for two species, the height of the bar of a value compared to those of other values shows us it relative frequency.<br>
+And all these similarities (between frequencies or between shapes) are "roughly" as we introduce the notion of "variability".<br>
+
+Hypothesis B, in contrast, means that the two species obey the different distribution of possibility in term of sepal width. Thus in histogram, we will observe a much more different shape for each (not "roughly" then).<br>
+<br>
+For compare their shape, we will use the new graph in **Question 3b**, that of the added up result of two. <br>
+In order to correspnd to this hypothesis, in further measurements we probably see their shape are cloth to the half of **histogram 3b**. More concretly, we will see idealy: 
+  <br>  0 or 1 for the width range 2.0cm, 2.1cm, 3.5cm, 3.6cm and 3.7cm; 
+  <br>  1 or 2 for 2.2cm, 2.3cm, 2.4cm, 3.4cm; 
+  <br>  4 for 2.5cm and 3.2cm; 
+  <br>  2 or 3 for 2.6cm; 
+  <br>  4 or 5 for 2.7cm and 2.9cm;
+  <br>  7 for 2.8cm;
+  <br>  10 for 3.0cm;
+  <br>  3 or 4 for 3.1cm
+  <br>  2 for 3.3cm; 
+  <br>  and 1 for 3.8cm; <br>
+Therefore, for the Hypothesis B, the result must bi different with the expecting data above (and the diffrence won't be slight, which can be a nuance from variablility, but a much larger difference in number).<br>
+<br>
+Explain what the two hypotheses acutally mean. Make reference to the figures above. Be specific about exactly what ranges of values, and how many, we would predict to see in further measurements from each species, under each of the two hypotheses.<br>
+<br>
+<br>
+
+#### Question 3d.
+<br>
+As we have assumed above, it need us now to compare the two graphs with this new obtained half graph.<br>
+The difference is not a obvious one here: when the two graphs corresond perfectly the data expecting at from 2.0cm to 2.2cm, 2.5cm, 2.7cm, 3.1cm, from 3.4cm to 3.7cm, the gap is huge when we see the data from 2.8cm to 3.0cm, and decalage exists also in other ranges. But still as in the range near the mean of width number (from 2.8cm to 3.0cm) the difference is huge, with which the two shapes diver a lot, we can rather approve the conclusion that they are not roughly the same.<br>
+<br>
+Hence, after all calculation and comparison, we can now draw the conclusion in favor of the second hypothesis.<br>
+<br>
+<br>
+<br>
+
+## Exercise 4 : Reasoning about categorical data
+<br>
+```{r}
+ggplot2::ggplot(stressshift::stress_shift_permit, ggplot2::aes(x=Category, fill=Syllable)) + ggplot2::geom_bar(position="dodge", colour="black") + ggplot2::scale_fill_brewer(palette="Set3")
+```
+<br>
+
+#### Question 4a.
+
+```{r}
+ggplot2::ggplot(stressshift::stress_shift_permit, ggplot2::aes(x=0, fill=Syllable)) + ggplot2::geom_bar(position="dodge", colour="black") + ggplot2::scale_fill_brewer(palette="Set3") + ggplot2::xlab("") + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank()) + ggplot2::xlim(c(-1,1))
+```
+<br>
+
+* **Hypothesis A**: **Permit**(noun) and **permit**(verb) are the same in terms of their stress.
+* **Hypothesis B**: **Permit**(noun) and **permit**(verb) are different in terms of their stress.
+<br>
+<br>
+The question here is in the same logic as in **Exercise 3**, so we follow the same precess above.<br>
+On pooling two kinds of data together, we obtain the graph above in **Question 4a**. Then we can image a ideal group of data having the same shape with the added up graph here: that should be a histogram with two bar (*Syllable 1* and *Syllable 2*), whose count should be around 18-19 and around 29.<br>
+<br>
+<br>
+
+#### Question 4b.
+<br>
+The difference is quite obvious here: for the case where the stress is on the first syllable, the usage as *Noun* has a count of 35 exact, while as *Verb* only one; the same for that on the second syllable, only 11 counts for *Noun*, while 45 for *Verb*.<br>
+<br>
+It's thus easier to say that the two usages here of the word ***permit*** got different shapes, which leads us to the conclusion that as in **Hypothesis B**: ***permit***(noun) and ***permit***(verb) are different in terms of their stress.<br>
+<br>
+<br>
+<br>
+
+## Exercise 5 : Reasoning about count data
+<br>
+```{r}
+library(magrittr)
+set.seed(1)
+ver_balanced <- languageR::ver %>%
+  dplyr::group_by(SemanticClass) %>%
+  dplyr::sample_n(198)
+set.seed(NULL)
+```
+<br>
+```{r}
+ggplot2::ggplot(ver_balanced, ggplot2::aes(x=Frequency)) + ggplot2::geom_histogram(fill="lightgrey", colour="black", binwidth=250) + ggplot2::facet_grid(SemanticClass ~ .)
+```
+<br>
+
+#### Question 5a.
+<br>
+The two counts here refer to: firstly, the count of the occurrence in the corpus, from which we get its **frequency** (as x axis); the the **count** as y axis who counts the number of verbs with prefixe ***ver-*** of a certain category (semantically transparent or opaque) for each range of frequency.<br>
+<br>
+<br>
+
+#### Question 5b.
+<br>
+
+* **Hypothesis A**: Semantically transparent and opaque ***ver-*** verbs are the same in terms of their frequency.
+* **Hypothesis B**: Semantically transparent and opaque ***ver-*** verbs are different in terms of their stress.
+<br>
+<br>
+With these two graphs, it is still not enough for us to say whether these two hypothesis are correct or not, because of the existence of "variability" in distribution. When a graph's shape seems similar to another, we can't eliminate the possibility that only a lucky coincidance has made it like this. Thus, it drive us to think the question in a more quantitative way.<br> 
+<br>
+Again we repeat the same thing as we did in **Exercise 3** and **4**.<br>
+<br>
+Here's a new histogram containing all data in two groups:<br>
+<br>
+```{r echo=FALSE}
+ggplot2::ggplot(ver_balanced, ggplot2::aes(x=Frequency)) + ggplot2::geom_histogram(fill="lightgrey", colour="black", binwidth=250)
+```
+<br>
+Summed up the data from two histograms shows a expected shape of data corresponds to **Hypothesis A**, with number of verbs, whose frequcy from 0 to 250, around 240; from 250 to 500 the count is around 70; around 24 from 500 to 750; and so on... <br>
+So assuming **Hypothesis A** is the answer, we should have for each group a list of rough count numbers (corresponding to ranges from 0-250 and until 21750-22000): 120, 35, 12, 6, 5, 6, 2, 1, 3, 1, 2, 0, 1, 1 ......<br>
+<br>
+<br>
+
+#### Question 5c.
+<br>
+Now let's do the comparaison with the ideal model.<br>
+Then we will find out it is really difficult to say they correspond or not. If we focus on the first severe frequency groups, it can be discovered that ther is no match, as the difference between two categories is a real huge one (around 87 v.s. over 150 for those with a frequency between 0 and 250, while 25 v.s. nearly 50 for frequency between 250 and 500).<br>
+Therefore, what we notice form the whole graph is that the most of data are gathered in range between 0 and 1500, then both of them has a trend to decrise swiftly after the frequency of 500, and the counts following are all quite samll (smaller than 5). So maybe we can say the trend is similar for both.<br>
+Even when we consider the huge gap in the first two frequency groups, as the step is 250, which is large, it can be possible that the most of data of **transparent *ver-* ** are all around a  frequency near 250, then the gap is just by accident, caused by the grouping.<br>
+<br>
+Thus, without more specific data, it's difficult to juge these two hypothesis.<br>
+<br>
+<br>
+<br>
